@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  # Main RAGbot application
+  ragbot:
+    build: .
+    container_name: ragbot
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - DATABASE_PATH=/app/data/ragbot.db
+      - UPLOAD_DIR=/app/uploads
+      - ENVIRONMENT=production
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+
+  # Ollama for LLM
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    # Auto-pull model on startup
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "ollama serve &
+       sleep 5 &&
+       ollama pull llama3.2 &&
+       tail -f /dev/null"
+
+  # Nginx reverse proxy (optional - for production)
+  nginx:
+    image: nginx:alpine
+    container_name: ragbot-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - ragbot
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    profiles:
+      - production
+
+  # Redis cache (optional - for production)
+  redis:
+    image: redis:7-alpine
+    container_name: ragbot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    profiles:
+      - production
+
+  # PostgreSQL (optional - for production, replacing SQLite)
+  postgres:
+    image: postgres:15-alpine
+    container_name: ragbot-postgres
+    environment:
+      - POSTGRES_DB=ragbot
+      - POSTGRES_USER=ragbot
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    profiles:
+      - production
+
+volumes:
+  ollama_data:
+  redis_data:
+  postgres_data:
+
+networks:
+  ragbot-network:
+    driver: bridge

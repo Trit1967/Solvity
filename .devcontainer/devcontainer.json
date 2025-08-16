@@ -1,0 +1,42 @@
+{
+  "name": "RAGbot Development",
+  "image": "mcr.microsoft.com/devcontainers/python:3.10",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-azuretools.vscode-docker",
+        "GitHub.copilot",
+        "GitHub.copilot-chat"
+      ],
+      "settings": {
+        "python.defaultInterpreter": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.formatting.provider": "black"
+      }
+    }
+  },
+  
+  "postCreateCommand": "pip install -r requirements_minimal.txt",
+  
+  "forwardPorts": [8000, 7860, 7861, 11434],
+  
+  "remoteUser": "vscode",
+  
+  "mounts": [
+    "source=${localWorkspaceFolder}/data,target=/workspace/data,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/uploads,target=/workspace/uploads,type=bind,consistency=cached"
+  ],
+  
+  "runArgs": ["--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
+  
+  "postStartCommand": "echo '🚀 RAGbot development environment ready!'"
+}

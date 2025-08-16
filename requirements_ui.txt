@@ -1,0 +1,17 @@
+# UI Requirements for RAG Chatbot
+# Includes both Gradio and Streamlit options
+
+# Include base requirements
+-r requirements_neo.txt
+
+# Gradio (simpler, built-in components)
+gradio>=4.0.0
+
+# Streamlit (more customizable)
+streamlit>=1.28.0
+streamlit-chat>=0.1.1
+
+# Additional UI helpers
+plotly>=5.17.0  # For analytics charts
+markdown>=3.5  # For better markdown rendering
+python-multipart>=0.0.6  # For file uploads

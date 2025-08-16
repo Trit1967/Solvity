@@ -1,0 +1,49 @@
+# RAGbot Docker Configuration
+# Uses your existing codebase with API layer
+
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements_ragbot.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements_ragbot.txt
+
+# Copy application files
+COPY ragbot_app.py .
+COPY multi_tenant_rag.py .
+
+# Copy existing UI components
+COPY rag-document-assistant/src/ ./rag-document-assistant/src/
+
+# Copy other existing implementations (optional)
+COPY cached_rag.py .
+COPY smart_rag.py .
+COPY final_rag.py .
+
+# Create necessary directories
+RUN mkdir -p data tenant_data uploads cache logs
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Expose ports
+EXPOSE 8000
+
+# Run the application
+CMD ["python", "-m", "uvicorn", "ragbot_app:app", "--host", "0.0.0.0", "--port", "8000"]

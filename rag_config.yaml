@@ -1,0 +1,10 @@
+base_url: http://localhost:11434
+chunk_overlap: 400
+chunk_size: 5000
+debug_mode: true
+enable_resume_mode: true
+max_context_length: 4000
+min_chunk_size: 50
+model: llama3.2
+similarity_threshold: 0.15
+top_k_results: 5

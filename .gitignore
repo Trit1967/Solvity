@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+neo_rag_env/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Data & Security
+data/
+tenant_data/
+secure_data/
+uploads/
+cache/
+logs/
+*.db
+*.sqlite
+*.log
+tenants.json
+admin_config.yaml
+
+# Model files
+*.pkl
+*.pth
+*.bin
+faiss_index/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+*.bak
+*.backup
+*.old
+
+# Sensitive
+*.key
+*.pem
+*.crt
+secrets/

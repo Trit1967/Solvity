@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # RAGbot API service
+  ragbot:
+    build:
+      context: .
+      dockerfile: Dockerfile.ragbot
+    container_name: ragbot-api
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - SECRET_KEY=${SECRET_KEY:-please-change-this-secret-key}
+      - ENVIRONMENT=production
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./tenant_data:/app/tenant_data
+      - ./uploads:/app/uploads
+      - ./cache:/app/cache
+      - ./logs:/app/logs
+      - ./tenants.json:/app/tenants.json
+    depends_on:
+      - ollama
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+
+  # Ollama service (from your existing setup)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ragbot-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "ollama serve &
+       sleep 5 &&
+       ollama pull llama3.2 &&
+       ollama pull mistral &&
+       tail -f /dev/null"
+
+  # Optional: Existing Gradio UI (user dashboard)
+  user-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ragbot
+    container_name: ragbot-user-ui
+    command: python rag-document-assistant/src/user_dashboard.py
+    ports:
+      - "7860:7860"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - GRADIO_SERVER_NAME=0.0.0.0
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    depends_on:
+      - ollama
+      - ragbot
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    profiles:
+      - with-ui
+
+  # Optional: Existing Gradio UI (admin dashboard)
+  admin-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ragbot
+    container_name: ragbot-admin-ui
+    command: python rag-document-assistant/src/admin_dashboard.py
+    ports:
+      - "7861:7861"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - GRADIO_SERVER_NAME=0.0.0.0
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+      - ./admin_config.yaml:/app/admin_config.yaml
+    depends_on:
+      - ollama
+      - ragbot
+    restart: unless-stopped
+    networks:
+      - ragbot-network
+    profiles:
+      - with-ui
+
+volumes:
+  ollama_data:
+
+networks:
+  ragbot-network:
+    driver: bridge

@@ -1,0 +1,32 @@
+# RAGbot Requirements
+# Combines existing dependencies with API layer
+
+# From your existing requirements
+langchain==0.1.0
+langchain-community==0.0.10
+chromadb==0.4.22
+sentence-transformers==2.2.2
+transformers==4.36.0
+pypdf==3.17.0
+python-docx==1.1.0
+pdfplumber==0.10.3
+numpy==1.24.3
+torch==2.1.0
+pandas==2.1.3
+gradio==4.19.0
+
+# New for API layer
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.1
+python-dotenv==1.0.0
+slowapi==0.1.9
+python-multipart==0.0.6
+pydantic==2.5.0
+pyyaml==6.0.1
+
+# Optional for production
+# redis==5.0.1
+# stripe==7.4.0
