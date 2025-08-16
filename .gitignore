@@ -54,4 +54,4 @@ Thumbs.db
 *.key
 *.pem
 *.crt
-secrets/
+secrets/.git-credentials

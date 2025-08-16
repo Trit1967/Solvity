@@ -1,6 +1,7 @@
-# Replit configuration for RAGbot
-run = "python free_local_test.py"
+run = "python main_replit.py"
 language = "python3"
+entrypoint = "main_replit.py"
+modules = ["python-3.10"]
 
 [env]
 PYTHONPATH = "${PYTHONPATH}:${REPL_HOME}"
@@ -20,30 +21,6 @@ guessImports = true
 localPort = 8000
 externalPort = 80
 
-[unitTest]
-language = "python3"
-
-[debugger]
-support = true
-
-[debugger.interactive]
-transport = "localhost:0"
-startCommand = ["dap-python", "main.py"]
-
-[debugger.interactive.integratedAdapter]
-dapTcpAddress = "localhost:0"
-
-[debugger.interactive.initializeMessage]
-command = "initialize"
-type = "request"
-
-[debugger.interactive.launchMessage]
-command = "attach"
-type = "request"
-
-[debugger.interactive.launchMessage.arguments]
-logging = {}
-
 [deployment]
-run = ["sh", "-c", "python free_local_test.py"]
+run = ["sh", "-c", "python main_replit.py"]
 deploymentTarget = "cloudrun"

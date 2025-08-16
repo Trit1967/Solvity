@@ -1,0 +1,23 @@
+# Minimal requirements for Replit deployment
+# Only essential packages that work on Replit's free tier
+
+# Core web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+
+# Basic dependencies
+python-multipart==0.0.6
+aiofiles==23.2.1
+
+# For HTML responses
+jinja2==3.1.2
+
+# CORS support
+python-jose[cryptography]==3.3.0
+
+# Rate limiting (optional, lightweight)
+slowapi==0.1.9
+
+# Database (SQLite is built-in)
+# No external database packages needed
